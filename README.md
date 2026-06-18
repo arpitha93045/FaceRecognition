@@ -59,7 +59,7 @@ A secure AI-based desktop application for personnel identification and access mo
 ## Project Structure
 
 ```
-FaceRecognition/face_app/          ← project root (run all commands from here)
+FaceRecognition/                   ← project root (run all commands from here)
 ├── main.py                        # Entry point
 ├── config.ini                     # DB URL, model settings, paths
 ├── requirements.txt
@@ -160,7 +160,7 @@ source ~/.zshrc
 
 ```bash
 git clone https://github.com/arpitha93045/FaceRecognition.git
-cd FaceRecognition/face_app
+cd FaceRecognition
 ```
 
 ### Step 6 — Create a virtual environment
@@ -237,7 +237,7 @@ Download from [git-scm.com](https://git-scm.com/download/win) and install with d
 
 ```cmd
 git clone https://github.com/arpitha93045/FaceRecognition.git
-cd FaceRecognition\face_app
+cd FaceRecognition
 ```
 
 ### Step 5 — Create a virtual environment
@@ -270,7 +270,7 @@ Some ONNX Runtime builds require the [Microsoft Visual C++ Redistributable](http
 
 ## Database Setup
 
-Run these commands from inside `FaceRecognition/face_app/`. On Windows use `postgres` as the superuser instead of `$USER`.
+Run these commands from the repo root (`FaceRecognition/`). On Windows use `postgres` as the superuser instead of `$USER`.
 
 **macOS / Linux:**
 
@@ -320,7 +320,7 @@ set DATABASE_URL=postgresql://face_user:password@localhost:5432/facerecog_db
 **macOS / Linux:**
 
 ```bash
-cd /path/to/FaceRecognition/face_app
+cd /path/to/FaceRecognition
 source .venv/bin/activate
 python3 main.py
 ```
@@ -328,7 +328,7 @@ python3 main.py
 **Windows:**
 
 ```cmd
-cd C:\path\to\FaceRecognition\face_app
+cd C:\path\to\FaceRecognition
 .venv\Scripts\activate
 python main.py
 ```
@@ -405,7 +405,7 @@ python main.py
 | Problem | Platform | Fix |
 |---|---|---|
 | `ModuleNotFoundError: No module named 'PyQt6'` | Both | Activate the venv first: `source .venv/bin/activate` (macOS) or `.venv\Scripts\activate` (Windows) |
-| `Must construct a QApplication before a QWidget` | Both | Wrong directory — run `python3 main.py` from `FaceRecognition/face_app/`, not from inside a subdirectory |
+| `Must construct a QApplication before a QWidget` | Both | Wrong directory — run `python3 main.py` from `FaceRecognition/`, not from inside a subdirectory |
 | `pip: command not found` | macOS | Use `pip3` or `python3 -m pip` |
 | `python: command not found` | macOS | Use `python3` |
 | `externally-managed-environment` | macOS | Always use a venv: `python3 -m venv .venv` |
