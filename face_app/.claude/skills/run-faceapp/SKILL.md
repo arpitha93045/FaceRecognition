@@ -6,7 +6,7 @@ description: Launch and drive the FaceGuard face recognition desktop app (PyQt6 
 
 ## Environment requirements
 
-- Working directory: repo root (`/path/to/untitled`)
+- Working directory: repo root (`/path/to/face_app`)
 - Virtual environment: `face_app/.venv/` (Python 3.10+)
 - PostgreSQL 16 must be running: `brew services start postgresql@16`
 - Database: `facerecog_db` with user `face_user` / password `password`
@@ -18,7 +18,7 @@ description: Launch and drive the FaceGuard face recognition desktop app (PyQt6 
 face_app/.venv/bin/python face_app/main.py
 ```
 
-Run from the repo root (`untitled/`). Do NOT cd into `face_app/` first — imports break.
+Run from the repo root (`face_app/`). Do NOT cd into `face_app/face_app/` first — imports break.
 
 ## Startup sequence
 

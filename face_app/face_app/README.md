@@ -123,7 +123,7 @@ brew services start postgresql@16
 
 ```bash
 # 1. Clone / navigate to the project root
-cd /path/to/untitled
+cd /path/to/face_app
 
 # 2. Create a virtual environment
 python3 -m venv face_app/.venv
@@ -172,7 +172,7 @@ export DATABASE_URL=postgresql://face_user:password@localhost:5432/facerecog_db
 ## Running the App
 
 ```bash
-# From the project root (untitled/)
+# From the project root (face_app/)
 face_app/.venv/bin/python face_app/main.py
 ```
 

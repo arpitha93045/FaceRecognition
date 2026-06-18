@@ -56,11 +56,13 @@ class DashboardPage(QWidget):
         card2, self._lbl_today    = _stat_card("Today's Entries",             "0", "#4CAF50")
         card3, self._lbl_unknown  = _stat_card("Unknown Detections Today",    "0", "#F44336")
         card4, self._lbl_cameras  = _stat_card("Active Cameras",              "0", "#FF9800")
+        card5, self._lbl_detected = _stat_card("Currently Detected",          "0", "#9C27B0")
 
         grid.addWidget(card1, 0, 0)
         grid.addWidget(card2, 0, 1)
         grid.addWidget(card3, 0, 2)
         grid.addWidget(card4, 0, 3)
+        grid.addWidget(card5, 0, 4)
         layout.addLayout(grid)
 
         recent_lbl = QLabel("Recent Activity")
@@ -129,3 +131,6 @@ class DashboardPage(QWidget):
 
     def on_shown(self):
         self._refresh()
+
+    def set_currently_detected(self, count: int):
+        self._lbl_detected.setText(str(count))

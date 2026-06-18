@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtWidgets import (
     QComboBox, QHBoxLayout, QLabel, QMessageBox,
     QPushButton, QTableWidget, QTableWidgetItem,
@@ -20,6 +20,7 @@ from utils.config_loader import Config
 
 
 class LiveRecognitionPage(QWidget):
+    detected_count_changed = pyqtSignal(int)  # emits face count on every detection update
     def __init__(self, detector: FaceDetector, matcher: EmbeddingMatcher, parent=None):
         super().__init__(parent)
         self._detector = detector
@@ -140,6 +141,7 @@ class LiveRecognitionPage(QWidget):
         self._feed_label.setText("Camera feed will appear here")
         self._det_table.setRowCount(0)
         self._worker = None
+        self.detected_count_changed.emit(0)
 
     def _on_frame(self, frame):
         pixmap = numpy_to_pixmap(frame)
@@ -160,6 +162,7 @@ class LiveRecognitionPage(QWidget):
             self._det_table.setItem(row, 0, QTableWidgetItem(d["name"]))
             self._det_table.setItem(row, 1, QTableWidgetItem(d["service_number"]))
             self._det_table.setItem(row, 2, QTableWidgetItem(f"{d['confidence']*100:.1f}%"))
+        self.detected_count_changed.emit(len(results))
 
     def _on_unknown(self, info: dict):
         dlg = UnknownAlertDialog(info, parent=self)

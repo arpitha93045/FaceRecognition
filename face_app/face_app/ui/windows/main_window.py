@@ -109,6 +109,10 @@ class MainWindow(QMainWindow):
             self._pages[name] = page
             self._stack.addWidget(page)
 
+        self._pages["Live Recognition"].detected_count_changed.connect(
+            self._pages["Dashboard"].set_currently_detected
+        )
+
     def _on_nav_changed(self, index: int):
         self._stack.setCurrentIndex(index)
         page_name = self._nav_list.item(index).text()
