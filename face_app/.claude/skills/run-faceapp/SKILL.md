@@ -6,8 +6,8 @@ description: Launch and drive the FaceGuard face recognition desktop app (PyQt6 
 
 ## Environment requirements
 
-- Working directory: repo root (`/path/to/face_app`)
-- Virtual environment: `face_app/.venv/` (Python 3.10+)
+- Working directory: `FaceRecognition/face_app/` (the folder containing the inner `face_app/` package and `requirements.txt`)
+- Virtual environment: `.venv/` inside that directory (Python 3.10+)
 - PostgreSQL 16 must be running: `brew services start postgresql@16`
 - Database: `facerecog_db` with user `face_user` / password `password`
 - insightface `buffalo_l` model cached at `~/.insightface/models/buffalo_l/` (auto-downloads on first run, ~500 MB)
@@ -15,10 +15,12 @@ description: Launch and drive the FaceGuard face recognition desktop app (PyQt6 
 ## Launch command
 
 ```bash
-face_app/.venv/bin/python face_app/main.py
+cd /path/to/FaceRecognition/face_app
+source .venv/bin/activate
+python3 face_app/main.py
 ```
 
-Run from the repo root (`face_app/`). Do NOT cd into `face_app/face_app/` first — imports break.
+Do NOT `cd` into the inner `face_app/face_app/` — imports will break. Always run from the outer `face_app/` level.
 
 ## Startup sequence
 
@@ -38,7 +40,7 @@ Run from the repo root (`face_app/`). Do NOT cd into `face_app/face_app/` first 
 
 ## Verifying it works
 
-After login, the Dashboard should show stat cards (Total Registered, Today's Entries, etc.) with values ≥ 0. No error dialogs = healthy startup.
+After login, the Dashboard should show stat cards (Total Registered, Currently Detected, Today's Entries, Unknown Detections, Active Cameras) with values ≥ 0. No error dialogs = healthy startup.
 
 To verify face recognition:
 1. Add a person with at least one clear face photo
@@ -67,8 +69,10 @@ brew services start postgresql@16
 ## If the venv is missing
 
 ```bash
-python3 -m venv face_app/.venv
-face_app/.venv/bin/pip install -r face_app/requirements.txt
+cd /path/to/FaceRecognition/face_app
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r face_app/requirements.txt
 ```
 
 ## If the database is missing

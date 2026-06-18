@@ -323,7 +323,7 @@ set DATABASE_URL=postgresql://face_user:password@localhost:5432/facerecog_db
 **macOS / Linux:**
 
 ```bash
-# Make sure you are in FaceRecognition/face_app/
+cd /path/to/FaceRecognition/face_app
 source .venv/bin/activate
 python3 face_app/main.py
 ```
@@ -331,7 +331,7 @@ python3 face_app/main.py
 **Windows:**
 
 ```cmd
-REM From inside FaceRecognition\face_app\
+cd C:\path\to\FaceRecognition\face_app
 .venv\Scripts\activate
 python face_app\main.py
 ```
