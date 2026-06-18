@@ -59,12 +59,13 @@ A secure AI-based desktop application for personnel identification and access mo
 ## Project Structure
 
 ```
-face_app/
+FaceRecognition/face_app/          ← project root (run all commands from here)
 ├── main.py                        # Entry point
 ├── config.ini                     # DB URL, model settings, paths
 ├── requirements.txt
 ├── schema.sql                     # PostgreSQL DDL + seed data
 ├── .env.example                   # Environment variable template
+├── .venv/                         # Virtual environment (not committed)
 │
 ├── db/
 │   ├── connection.py              # SQLAlchemy engine + session_scope()
@@ -162,8 +163,6 @@ git clone https://github.com/arpitha93045/FaceRecognition.git
 cd FaceRecognition/face_app
 ```
 
-> You must be inside `FaceRecognition/face_app/` (the folder that contains the inner `face_app/` package and `requirements.txt`) for all commands below.
-
 ### Step 6 — Create a virtual environment
 
 ```bash
@@ -181,7 +180,7 @@ Your prompt will change to show `(.venv)` — this means the venv is active.
 ### Step 8 — Install Python dependencies
 
 ```bash
-pip install -r face_app/requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Step 9 — Grant camera permission
@@ -241,8 +240,6 @@ git clone https://github.com/arpitha93045/FaceRecognition.git
 cd FaceRecognition\face_app
 ```
 
-> You must be inside `FaceRecognition\face_app\` (the folder that contains the inner `face_app\` package and `requirements.txt`) for all commands below.
-
 ### Step 5 — Create a virtual environment
 
 ```cmd
@@ -260,7 +257,7 @@ Your prompt will change to show `(.venv)` — this means the venv is active.
 ### Step 7 — Install Python dependencies
 
 ```cmd
-pip install -r face_app\requirements.txt
+pip install -r requirements.txt
 ```
 
 > **Note:** If you see a `Microsoft Visual C++ required` error while installing `psycopg2-binary`, install the [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) and retry.
@@ -273,14 +270,14 @@ Some ONNX Runtime builds require the [Microsoft Visual C++ Redistributable](http
 
 ## Database Setup
 
-Run these commands from your terminal (macOS) or Command Prompt (Windows). On Windows replace `$USER` with your Windows username or use `postgres` as the superuser.
+Run these commands from inside `FaceRecognition/face_app/`. On Windows use `postgres` as the superuser instead of `$USER`.
 
 **macOS / Linux:**
 
 ```bash
 psql -U $USER -d postgres -c "CREATE USER face_user WITH PASSWORD 'password';"
 psql -U $USER -d postgres -c "CREATE DATABASE facerecog_db OWNER face_user;"
-psql -U $USER -d facerecog_db -f face_app/schema.sql
+psql -U $USER -d facerecog_db -f schema.sql
 psql -U $USER -d facerecog_db -c "
   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO face_user;
   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO face_user;
@@ -293,13 +290,13 @@ psql -U $USER -d facerecog_db -c "
 ```cmd
 psql -U postgres -d postgres -c "CREATE USER face_user WITH PASSWORD 'password';"
 psql -U postgres -d postgres -c "CREATE DATABASE facerecog_db OWNER face_user;"
-psql -U postgres -d facerecog_db -f face_app\schema.sql
+psql -U postgres -d facerecog_db -f schema.sql
 psql -U postgres -d facerecog_db -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO face_user; GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO face_user; GRANT USAGE ON SCHEMA public TO face_user;"
 ```
 
 ### Custom DB credentials
 
-Edit `face_app/config.ini`:
+Edit `config.ini`:
 
 ```ini
 [database]
@@ -325,7 +322,7 @@ set DATABASE_URL=postgresql://face_user:password@localhost:5432/facerecog_db
 ```bash
 cd /path/to/FaceRecognition/face_app
 source .venv/bin/activate
-python3 face_app/main.py
+python3 main.py
 ```
 
 **Windows:**
@@ -333,7 +330,7 @@ python3 face_app/main.py
 ```cmd
 cd C:\path\to\FaceRecognition\face_app
 .venv\Scripts\activate
-python face_app\main.py
+python main.py
 ```
 
 > **First launch:** The `buffalo_l` model pack (~500 MB) auto-downloads to `~/.insightface/models/` (macOS/Linux) or `C:\Users\<you>\.insightface\models\` (Windows). The splash screen shows "Loading AI models… Please wait." This only happens once.
@@ -407,13 +404,15 @@ python face_app\main.py
 
 | Problem | Platform | Fix |
 |---|---|---|
+| `ModuleNotFoundError: No module named 'PyQt6'` | Both | Activate the venv first: `source .venv/bin/activate` (macOS) or `.venv\Scripts\activate` (Windows) |
+| `Must construct a QApplication before a QWidget` | Both | Wrong directory — run `python3 main.py` from `FaceRecognition/face_app/`, not from inside a subdirectory |
 | `pip: command not found` | macOS | Use `pip3` or `python3 -m pip` |
 | `python: command not found` | macOS | Use `python3` |
 | `externally-managed-environment` | macOS | Always use a venv: `python3 -m venv .venv` |
 | `psycopg2-binary` build error | Windows | Install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) |
 | `pg_config not found` | macOS | Run `brew install postgresql@16` and add to PATH |
 | `psql` not recognized | Windows | Add `C:\Program Files\PostgreSQL\16\bin` to system PATH |
-| `password is wrong` on login | Both | Re-run: `psql -U <user> -d facerecog_db -f face_app/schema.sql` |
+| `password is wrong` on login | Both | Re-run: `psql -U <user> -d facerecog_db -f schema.sql` |
 | App closes after login | Both | Ensure PostgreSQL is running |
 | PostgreSQL not running | macOS | `brew services start postgresql@16` |
 | PostgreSQL not running | Windows | Open Services → find `postgresql-x64-16` → Start |
