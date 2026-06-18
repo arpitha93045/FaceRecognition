@@ -10,7 +10,8 @@ A secure AI-based desktop application for personnel identification and access mo
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
-- [Installation](#installation)
+- [Installation — macOS](#installation--macos)
+- [Installation — Windows](#installation--windows)
 - [Database Setup](#database-setup)
 - [Running the App](#running-the-app)
 - [Default Credentials](#default-credentials)
@@ -29,7 +30,7 @@ A secure AI-based desktop application for personnel identification and access mo
 | **Unknown Detection** | Captures snapshot, logs, and alerts on unregistered faces |
 | **Attendance Logs** | Entry/exit events with timestamp, camera location, and confidence |
 | **Search by Image** | Upload a photo and find the top-5 matching personnel records |
-| **Dashboard** | Live stats — total registered, today's entries, unknown detections, active cameras |
+| **Dashboard** | Live stats — total registered, currently detected, today's entries, unknown detections, active cameras |
 | **Role-based Access** | Admin (full access) and Operator (read-only) roles |
 | **Encrypted Embeddings** | AES/Fernet-encrypted face vectors stored in PostgreSQL |
 | **Audit Logs** | Every login, logout, and data change is logged |
@@ -97,59 +98,195 @@ face_app/
 │   └── image_utils.py             # numpy↔QPixmap, draw bounding boxes
 │
 └── data/
-    ├── photos/                    # Stored personnel photos
-    └── snapshots/                 # Unknown detection snapshots
+    ├── photos/                    # Stored personnel photos (git-ignored)
+    └── snapshots/                 # Unknown detection snapshots (git-ignored)
 ```
 
 ---
 
 ## Prerequisites
 
-- **macOS / Windows / Linux**
-- **Python 3.10 or later** (3.14 confirmed working)
-- **PostgreSQL 16**
-- ~1 GB disk space for the insightface `buffalo_l` model (downloads once on first launch)
+The following must be installed before setting up the application.
 
-### macOS (Homebrew)
+| Requirement | Version | Notes |
+|---|---|---|
+| Python | 3.10 or later | 3.12 recommended |
+| PostgreSQL | 16 | Must be running before launching the app |
+| Git | Any | To clone the repository |
+| Disk space | ~1.5 GB | ~500 MB for insightface `buffalo_l` model + dependencies |
+| Webcam / IP camera | — | Required for live recognition |
 
-```bash
-brew install python@3.12 postgresql@16
-brew services start postgresql@16
-```
+> **Internet access** is only needed once — on first launch to download the `buffalo_l` model (~500 MB). After that the app works fully offline.
 
 ---
 
-## Installation
+## Installation — macOS
+
+### Step 1 — Install Homebrew (if not already installed)
 
 ```bash
-# 1. Clone / navigate to the project root
-cd /path/to/face_app
-
-# 2. Create a virtual environment
-python3 -m venv face_app/.venv
-
-# 3. Install dependencies
-face_app/.venv/bin/pip install -r face_app/requirements.txt
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+
+### Step 2 — Install Python and PostgreSQL
+
+```bash
+brew install python@3.12 postgresql@16
+```
+
+### Step 3 — Start PostgreSQL
+
+```bash
+brew services start postgresql@16
+```
+
+Verify it is running:
+
+```bash
+brew services list | grep postgresql
+```
+
+You should see `postgresql@16` with status `started`.
+
+### Step 4 — Add PostgreSQL to PATH (if `psql` is not found)
+
+```bash
+echo 'export PATH="/opt/homebrew/opt/postgresql@16/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+### Step 5 — Clone the repository
+
+```bash
+git clone https://github.com/arpitha93045/FaceRecognition.git
+cd FaceRecognition/face_app
+```
+
+### Step 6 — Create a virtual environment
+
+```bash
+python3 -m venv .venv
+```
+
+### Step 7 — Activate the virtual environment
+
+```bash
+source .venv/bin/activate
+```
+
+### Step 8 — Install Python dependencies
+
+```bash
+pip install -r face_app/requirements.txt
+```
+
+### Step 9 — Grant camera permission
+
+On first use, macOS will prompt for camera access. If it does not:
+
+> System Settings → Privacy & Security → Camera → enable Terminal (or your IDE)
+
+---
+
+## Installation — Windows
+
+### Step 1 — Install Python 3.12
+
+Download the installer from [python.org](https://www.python.org/downloads/windows/).
+
+During installation:
+- Check **"Add Python to PATH"**
+- Check **"Install pip"**
+
+Verify in Command Prompt:
+
+```cmd
+python --version
+pip --version
+```
+
+### Step 2 — Install PostgreSQL 16
+
+Download the installer from [postgresql.org](https://www.postgresql.org/download/windows/).
+
+During installation:
+- Set a password for the `postgres` superuser — remember this
+- Keep the default port **5432**
+- Make sure **pgAdmin** and **Command Line Tools** are selected
+
+After installation, add PostgreSQL `bin` to your system PATH:
+
+> Control Panel → System → Advanced system settings → Environment Variables  
+> Edit `Path` under System variables → Add:  
+> `C:\Program Files\PostgreSQL\16\bin`
+
+Verify:
+
+```cmd
+psql --version
+```
+
+### Step 3 — Install Git
+
+Download from [git-scm.com](https://git-scm.com/download/win) and install with default settings.
+
+### Step 4 — Clone the repository
+
+```cmd
+git clone https://github.com/arpitha93045/FaceRecognition.git
+cd FaceRecognition\face_app
+```
+
+### Step 5 — Create a virtual environment
+
+```cmd
+python -m venv .venv
+```
+
+### Step 6 — Activate the virtual environment
+
+```cmd
+.venv\Scripts\activate
+```
+
+### Step 7 — Install Python dependencies
+
+```cmd
+pip install -r face_app\requirements.txt
+```
+
+> **Note:** If you see a `Microsoft Visual C++ required` error while installing `psycopg2-binary`, install the [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) and retry.
+
+### Step 8 — Install Visual C++ Redistributable (if needed)
+
+Some ONNX Runtime builds require the [Microsoft Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe). Download and install if the app fails to start.
 
 ---
 
 ## Database Setup
 
+Run these commands from your terminal (macOS) or Command Prompt (Windows). On Windows replace `$USER` with your Windows username or use `postgres` as the superuser.
+
+**macOS / Linux:**
+
 ```bash
-# Create the database user and database (run once)
 psql -U $USER -d postgres -c "CREATE USER face_user WITH PASSWORD 'password';"
 psql -U $USER -d postgres -c "CREATE DATABASE facerecog_db OWNER face_user;"
-
-# Load the schema and seed data
 psql -U $USER -d facerecog_db -f face_app/schema.sql
-
-# Grant permissions
 psql -U $USER -d facerecog_db -c "
   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO face_user;
   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO face_user;
   GRANT USAGE ON SCHEMA public TO face_user;
 "
+```
+
+**Windows (Command Prompt):**
+
+```cmd
+psql -U postgres -d postgres -c "CREATE USER face_user WITH PASSWORD 'password';"
+psql -U postgres -d postgres -c "CREATE DATABASE facerecog_db OWNER face_user;"
+psql -U postgres -d facerecog_db -f face_app\schema.sql
+psql -U postgres -d facerecog_db -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO face_user; GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO face_user; GRANT USAGE ON SCHEMA public TO face_user;"
 ```
 
 ### Custom DB credentials
@@ -164,19 +301,34 @@ url = postgresql://face_user:password@localhost:5432/facerecog_db
 Or set the environment variable:
 
 ```bash
+# macOS / Linux
 export DATABASE_URL=postgresql://face_user:password@localhost:5432/facerecog_db
+
+# Windows
+set DATABASE_URL=postgresql://face_user:password@localhost:5432/facerecog_db
 ```
 
 ---
 
 ## Running the App
 
+**macOS / Linux:**
+
 ```bash
-# From the project root (face_app/)
-face_app/.venv/bin/python face_app/main.py
+# From inside FaceRecognition/face_app/
+source .venv/bin/activate
+python face_app/main.py
 ```
 
-> **First launch:** The `buffalo_l` model pack (~500 MB) auto-downloads to `~/.insightface/models/` — the splash screen shows "Loading AI models… Please wait." This only happens once.
+**Windows:**
+
+```cmd
+REM From inside FaceRecognition\face_app\
+.venv\Scripts\activate
+python face_app\main.py
+```
+
+> **First launch:** The `buffalo_l` model pack (~500 MB) auto-downloads to `~/.insightface/models/` (macOS/Linux) or `C:\Users\<you>\.insightface\models\` (Windows). The splash screen shows "Loading AI models… Please wait." This only happens once.
 
 ---
 
@@ -211,8 +363,8 @@ face_app/.venv/bin/python face_app/main.py
 4. Recognized personnel appear with green bounding boxes (Name + Confidence)
 5. Unknown faces appear with red boxes and trigger an alert dialog + snapshot
 
-> **macOS camera permission:** On first use, grant Terminal camera access in  
-> System Settings → Privacy & Security → Camera
+> **macOS:** Grant Terminal camera access in System Settings → Privacy & Security → Camera  
+> **Windows:** Grant camera access in Settings → Privacy & Security → Camera
 
 ### 3. Search by Image
 
@@ -235,7 +387,7 @@ face_app/.venv/bin/python face_app/main.py
 
 ## Security Notes
 
-- **Face embeddings** are encrypted with Fernet (AES-128-CBC) before storage. The key is auto-generated at `~/.faceapp/fernet.key` on first run — **back this file up**. If lost, all stored embeddings become unrecoverable.
+- **Face embeddings** are encrypted with Fernet (AES-128-CBC) before storage. The key is auto-generated at `~/.faceapp/fernet.key` (macOS/Linux) or `C:\Users\<you>\.faceapp\fernet.key` (Windows) on first run — **back this file up**. If lost, all stored embeddings become unrecoverable.
 - **Passwords** are hashed with bcrypt (cost 12) — never stored in plain text.
 - **Audit logs** record every login, logout, and data modification.
 - **Role separation** — Operators can view but cannot add/edit/delete personnel, manage users, or change settings.
@@ -245,13 +397,19 @@ face_app/.venv/bin/python face_app/main.py
 
 ## Troubleshooting
 
-| Problem | Fix |
-|---|---|
-| `pip: command not found` | Use `pip3` or `python3 -m pip` |
-| `externally-managed-environment` | Use a venv: `python3 -m venv face_app/.venv` |
-| `psycopg2-binary` build error | Install PostgreSQL dev headers or use Python ≥ 3.10 |
-| `password is wrong` on login | Re-run: `psql -U $USER -d facerecog_db -f face_app/schema.sql` |
-| App closes after login | Ensure PostgreSQL is running: `brew services start postgresql@16` |
-| Camera not working (macOS) | Grant Terminal camera access in System Settings → Privacy & Security → Camera |
-| `buffalo_l` model slow to load | Normal on first launch — ~500 MB downloads once to `~/.insightface/models/` |
-| `pg_config not found` | Install PostgreSQL: `brew install postgresql@16` |
+| Problem | Platform | Fix |
+|---|---|---|
+| `pip: command not found` | macOS | Use `pip3` or `python3 -m pip` |
+| `python: command not found` | macOS | Use `python3` |
+| `externally-managed-environment` | macOS | Always use a venv: `python3 -m venv .venv` |
+| `psycopg2-binary` build error | Windows | Install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) |
+| `pg_config not found` | macOS | Run `brew install postgresql@16` and add to PATH |
+| `psql` not recognized | Windows | Add `C:\Program Files\PostgreSQL\16\bin` to system PATH |
+| `password is wrong` on login | Both | Re-run: `psql -U <user> -d facerecog_db -f face_app/schema.sql` |
+| App closes after login | Both | Ensure PostgreSQL is running |
+| PostgreSQL not running | macOS | `brew services start postgresql@16` |
+| PostgreSQL not running | Windows | Open Services → find `postgresql-x64-16` → Start |
+| Camera not working | macOS | Grant Terminal camera access in System Settings → Privacy & Security → Camera |
+| Camera not working | Windows | Settings → Privacy & Security → Camera → allow app access |
+| `buffalo_l` model slow to load | Both | Normal on first launch — ~500 MB downloads once |
+| ONNX Runtime error | Windows | Install [Visual C++ Redistributable](https://aka.ms/vs/17/release/vc_redist.x64.exe) |
