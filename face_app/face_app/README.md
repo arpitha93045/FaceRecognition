@@ -162,6 +162,8 @@ git clone https://github.com/arpitha93045/FaceRecognition.git
 cd FaceRecognition/face_app
 ```
 
+> You must be inside `FaceRecognition/face_app/` (the folder that contains the inner `face_app/` package and `requirements.txt`) for all commands below.
+
 ### Step 6 — Create a virtual environment
 
 ```bash
@@ -173,6 +175,8 @@ python3 -m venv .venv
 ```bash
 source .venv/bin/activate
 ```
+
+Your prompt will change to show `(.venv)` — this means the venv is active.
 
 ### Step 8 — Install Python dependencies
 
@@ -237,6 +241,8 @@ git clone https://github.com/arpitha93045/FaceRecognition.git
 cd FaceRecognition\face_app
 ```
 
+> You must be inside `FaceRecognition\face_app\` (the folder that contains the inner `face_app\` package and `requirements.txt`) for all commands below.
+
 ### Step 5 — Create a virtual environment
 
 ```cmd
@@ -248,6 +254,8 @@ python -m venv .venv
 ```cmd
 .venv\Scripts\activate
 ```
+
+Your prompt will change to show `(.venv)` — this means the venv is active.
 
 ### Step 7 — Install Python dependencies
 
@@ -315,9 +323,9 @@ set DATABASE_URL=postgresql://face_user:password@localhost:5432/facerecog_db
 **macOS / Linux:**
 
 ```bash
-# From inside FaceRecognition/face_app/
+# Make sure you are in FaceRecognition/face_app/
 source .venv/bin/activate
-python face_app/main.py
+python3 face_app/main.py
 ```
 
 **Windows:**
